@@ -1,0 +1,74 @@
+services:
+  namenode:
+    image: apache/hadoop:3.3.6
+    hostname: namenode
+    command: ["hdfs", "namenode"]
+    ports:
+      - 9870:9870
+    env_file:
+      - ./config
+    environment:
+      HADOOP_HOME: /opt/hadoop
+      HADOOP_MAPRED_HOME: /opt/hadoop
+      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
+    volumes:
+      - hadoop-data:/data
+    networks:
+      - hadoop-network
+
+  datanode:
+    image: apache/hadoop:3.3.6
+    command: ["hdfs", "datanode"]
+    env_file:
+      - ./config
+    environment:
+      HADOOP_HOME: /opt/hadoop
+      HADOOP_MAPRED_HOME: /opt/hadoop
+    volumes:
+      - hadoop-data:/data
+    networks:
+      - hadoop-network
+    depends_on:
+      - namenode
+
+  resourcemanager:
+    image: apache/hadoop:3.3.6
+    hostname: resourcemanager
+    command: ["yarn", "resourcemanager"]
+    environment:
+      HADOOP_HOME: /opt/hadoop
+      HADOOP_MAPRED_HOME: /opt/hadoop
+    ports:
+      - 8088:8088
+    env_file:
+      - ./config
+    volumes:
+      - ./data:/data
+      - ./mapred-site.xml:/opt/hadoop/etc/hadoop/mapred-site.xml
+      - ./test.sh:/opt/test.sh
+    networks:
+      - hadoop-network
+    depends_on:
+      - namenode
+
+  nodemanager:
+    image: apache/hadoop:3.3.6
+    command: ["yarn", "nodemanager"]
+    environment:
+      HADOOP_HOME: /opt/hadoop
+      HADOOP_MAPRED_HOME: /opt/hadoop
+    env_file:
+      - ./config
+    volumes:
+      - ./data:/data
+      - ./mapred-site.xml:/opt/hadoop/etc/hadoop/mapred-site.xml
+    networks:
+      - hadoop-network
+    depends_on:
+      - resourcemanager
+
+volumes:
+  hadoop-data:
+
+networks:
+  hadoop-network:
