@@ -3,7 +3,7 @@ cd ~/hadoop
 cd /netflix
 mvn clean compile
 cd ..
-co netflix_titles.csv ./data/
+cp netflix_titles.csv ./data/
 cp netflix/target/NetflixMR-uber.jar ./data/
 ```
 
