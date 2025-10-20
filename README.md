@@ -8,6 +8,7 @@ cp netflix/target/NetflixMR-uber.jar ./data/
 ```
 
 ```
+docker compose up -d
 docker exec -it hadoop-resource-manager-1 bash
 
 hdfs dfs -mkdir -p /input /output
